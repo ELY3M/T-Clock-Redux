@@ -13,6 +13,7 @@ WINDRES = windres.exe
 
 INC = 
 CFLAGS = -fno-ident -Wall -fvisibility=hidden -ffunction-sections -fmerge-all-constants -fno-asynchronous-unwind-tables -fno-exceptions -fwhole-program
+CXXFLAGS = $(CFLAGS)
 RESINC = 
 LIBDIR = 
 LIB = 
@@ -20,6 +21,7 @@ LDFLAGS = -static -Wl,--gc-sections
 
 INC_RELEASE = $(INC)
 CFLAGS_RELEASE = $(CFLAGS) -Os -DNDEBUG
+CXXFLAGS_RELEASE = $(CXXFLAGS) -Os -DNDEBUG
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
@@ -47,7 +49,7 @@ out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
 
 $(OBJDIR_RELEASE)\\__\\common\\autoversion.o: ..\\common\\autoversion.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ..\\common\\autoversion.cpp -o $(OBJDIR_RELEASE)\\__\\common\\autoversion.o
+	$(CXX) $(CXXFLAGS_RELEASE) $(INC_RELEASE) -c ..\\common\\autoversion.cpp -o $(OBJDIR_RELEASE)\\__\\common\\autoversion.o
 
 clean_release: 
 	cmd /c del /f $(OBJ_RELEASE) $(OUT_RELEASE)
