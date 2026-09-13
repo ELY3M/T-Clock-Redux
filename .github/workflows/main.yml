@@ -29,6 +29,7 @@ jobs:
       - name: Build
         shell: msys2 {0}
         run: |
+          cd src/~ide
           set -euxo pipefail
           make clean || true
           make
