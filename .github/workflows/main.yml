@@ -1,0 +1,57 @@
+name: Build Windows EXE
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call: 
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-binutils
+            mingw-w64-x86_64-make
+
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          set -euxo pipefail
+          make clean || true
+          make
+
+      - name: Find EXE
+        id: find_exe
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path . -Recurse -Filter *.exe |
+            Where-Object { $_.FullName -notmatch '\\(\.git|\.github|vendor|vcpkg)\\' } |
+            Select-Object -First 1
+
+          if (-not $exe) {
+            Write-Error "No .exe found after build"
+          }
+
+          "exe_path=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "exe_name=$($exe.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "Found EXE: $($exe.FullName)"
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe-${{ github.sha }}
+          path: ${{ steps.find_exe.outputs.exe_path }}
+          if-no-files-found: error
