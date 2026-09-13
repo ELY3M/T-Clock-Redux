@@ -18,7 +18,6 @@
 #include <string>
 #undef __USE_MINGW_ANSI_STDIO // correct it
 #define __USE_MINGW_ANSI_STDIO REAL_MINGW_ANSI_STDIO
-using namespace std;
 
 #define AV_VERSION "1.0.4"
 
@@ -128,9 +127,9 @@ struct Version{
 	uint32_t status;
 	uint32_t revision;
 	timeX_t timestamp;
-	string url;
-	string date;
-	string revhash;
+	std::string url;
+	std::string date;
+	std::string revhash;
 };
 Version ver_ = {0};
 
@@ -203,17 +202,17 @@ void SetupPath(const char* paths) {
 #	else
 #		define PATH_DELIM ":"
 #	endif // _WIN32
-	string path;
+	std::string path;
 	const char* envp;
 	int len = 0;
 	if((envp=getenv("PATH")))
 		path += envp;
 	if(paths && paths[0]){
-		path += string(PATH_DELIM) + paths;
+		path += std::string(PATH_DELIM) + paths;
 		++len;
 	}
 	if((envp=getenv("AUVER_PATH")) && envp[0]){
-		path += string(PATH_DELIM) + envp;
+		path += std::string(PATH_DELIM) + envp;
 		++len;
 	}
 #	ifdef _WIN32
@@ -320,7 +319,7 @@ int main(int argc, char** argv)
 		switch(opt){
 		case 0: case 1:
 			break;
-		case '?': /*case ':':*/
+		case '?': /*case ':'*/
 			g_flag |= FLAG_ERROR;
 			break;
 		case 'h':{
@@ -532,7 +531,7 @@ bool QueryGit(const char* path,Version* ver)
 				}
 			}
 			if(ver->flags & VER_OFFSET_REV) {
-				string revcount("git rev-list --count " + ver->revhash + "..HEAD --");
+				std::string revcount("git rev-list --count " + ver->revhash + "..HEAD --");
 				git = popen(revcount.c_str(),"r");
 				if(git){ /// revision count delta
 					read = fread(buf,1,(sizeof(buf)-1),git); buf[read]='\0'; error=pclose(git);
@@ -577,7 +576,7 @@ bool QueryGit(const char* path,Version* ver)
 bool QuerySVN(const char* path,Version* ver)
 {
 	bool found=false;
-	string svncmd("svn info --non-interactive ");
+	std::string svncmd("svn info --non-interactive ");
 	svncmd.append(path);
 	FILE* svn = popen(svncmd.c_str(), "r");
 	if(svn){
@@ -849,13 +848,13 @@ bool PrintDefine(FILE* fp,const char* define,const Version &ver)
 }
 void WriteDefine(FILE* fp,const char* define,const Version &ver)
 {
-	fprintf(fp,"#	define VER_%s ",define);
+	fprintf(fp,"#\tdefine VER_%s ",define);
 	PrintDefine(fp,define,ver);
 	putc('\n',fp);
 }
 void WriteDefineString(FILE* fp,const char* define,const Version &ver)
 {
-	fprintf(fp,"#	define VER_%s \"",define);
+	fprintf(fp,"#\tdefine VER_%s \"",define);
 	PrintDefine(fp,define,ver);
 	fputs("\"\n",fp);
 }
@@ -914,44 +913,44 @@ bool WriteHeader(const char* filepath,Version &ver)
 	gmtimeX_r(&ver.timestamp, &ttm);
 	fputs("/**** Date/Time ****/\n",fheader);
 	WriteDefine(fheader,"TIMESTAMP",ver);
-	fprintf(fheader,"#	define VER_TIME_SEC %i\n",ttm.tm_sec);
-	fprintf(fheader,"#	define VER_TIME_MIN %i\n",ttm.tm_min);
-	fprintf(fheader,"#	define VER_TIME_HOUR %i\n",ttm.tm_hour);
-	fprintf(fheader,"#	define VER_TIME_DAY %i\n",ttm.tm_mday);
-	fprintf(fheader,"#	define VER_TIME_MONTH %i\n",ttm.tm_mon+1);
-	fprintf(fheader,"#	define VER_TIME_YEAR %i\n",1900+ttm.tm_year);
-	fprintf(fheader,"#	define VER_TIME_WDAY %i\n",ttm.tm_wday);
-	fprintf(fheader,"#	define VER_TIME_YDAY %i\n",ttm.tm_yday);
+	fprintf(fheader,"#\tdefine VER_TIME_SEC %i\n",ttm.tm_sec);
+	fprintf(fheader,"#\tdefine VER_TIME_MIN %i\n",ttm.tm_min);
+	fprintf(fheader,"#\tdefine VER_TIME_HOUR %i\n",ttm.tm_hour);
+	fprintf(fheader,"#\tdefine VER_TIME_DAY %i\n",ttm.tm_mday);
+	fprintf(fheader,"#\tdefine VER_TIME_MONTH %i\n",ttm.tm_mon+1);
+	fprintf(fheader,"#\tdefine VER_TIME_YEAR %i\n",1900+ttm.tm_year);
+	fprintf(fheader,"#\tdefine VER_TIME_WDAY %i\n",ttm.tm_wday);
+	fprintf(fheader,"#\tdefine VER_TIME_YDAY %i\n",ttm.tm_yday);
 	strftime(tmp,64,"%a",&ttm);
-	fprintf(fheader,"#	define VER_TIME_WDAY_SHORT \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_TIME_WDAY_SHORT \"%s\"\n",tmp);
 	strftime(tmp,64,"%A",&ttm);
-	fprintf(fheader,"#	define VER_TIME_WDAY_FULL \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_TIME_WDAY_FULL \"%s\"\n",tmp);
 	strftime(tmp,64,"%b",&ttm);
-	fprintf(fheader,"#	define VER_TIME_MONTH_SHORT \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_TIME_MONTH_SHORT \"%s\"\n",tmp);
 	strftime(tmp,64,"%B",&ttm);
-	fprintf(fheader,"#	define VER_TIME_MONTH_FULL \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_TIME_MONTH_FULL \"%s\"\n",tmp);
 	strftime(tmp,64,"%H:%M:%S",&ttm);
-	fprintf(fheader,"#	define VER_TIME \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_TIME \"%s\"\n",tmp);
 	strftime(tmp,64,"%Y-%m-%d",&ttm);
-	fprintf(fheader,"#	define VER_DATE \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_DATE \"%s\"\n",tmp);
 	strftime(tmp,64,"%a, %b %d, %Y %H:%M:%S UTC",&ttm);
-	fprintf(fheader,"#	define VER_DATE_LONG \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_DATE_LONG \"%s\"\n",tmp);
 	strftime(tmp,64,"%Y-%m-%d %H:%M:%S UTC",&ttm);
-	fprintf(fheader,"#	define VER_DATE_SHORT \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_DATE_SHORT \"%s\"\n",tmp);
 	strftime(tmp,64,"%Y-%m-%dT%H:%M:%SZ",&ttm);
-	fprintf(fheader,"#	define VER_DATE_ISO \"%s\"\n",tmp);
+	fprintf(fheader,"#\tdefine VER_DATE_ISO \"%s\"\n",tmp);
 	
 	fputs("/**** Helper 'functions' ****/\n",fheader);
-	fputs("#	define VER_IsReleaseOrHigher() ( VER_STATUS >= 3 )\n", fheader);
+	fputs("#\tdefine VER_IsReleaseOrHigher() ( VER_STATUS >= 3 )\n", fheader);
 	for(int i=0; i<STATUS_NUM_; ++i)
-		fprintf(fheader,"#	define VER_Is%s() ( VER_STATUS == %i )\n", STATUS_S[i], i);
+		fprintf(fheader,"#\tdefine VER_Is%s() ( VER_STATUS == %i )\n", STATUS_S[i], i);
 	fputs("#ifndef STR\n",fheader);
-	fputs("#	define STR_(x) #x\n",fheader);
-	fputs("#	define STR(x) STR_(x)\n",fheader);
+	fputs("#\tdefine STR_(x) #x\n",fheader);
+	fputs("#\tdefine STR(x) STR_(x)\n",fheader);
 	fputs("#endif\n",fheader);
 	fputs("#ifndef L\n",fheader);
-	fputs("#	define L_(x) L##x\n",fheader);
-	fputs("#	define L(x) L_(x)\n",fheader);
+	fputs("#\tdefine L_(x) L##x\n",fheader);
+	fputs("#\tdefine L(x) L_(x)\n",fheader);
 	fputs("#endif\n",fheader);
 
 	fputs("#endif\n",fheader);
