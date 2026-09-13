@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: ubunbu-latest
 
     steps:
       - name: Checkout
@@ -27,13 +27,6 @@ jobs:
             mingw-w64-x86_64-binutils
             mingw-w64-x86_64-make
 
-      - name: Install MinGW 32-bit toolchain
-        shell: msys2 {0}
-        run: |
-          pacman -Syu --noconfirm || true
-          pacman -S --noconfirm --needed mingw-w64-i686-gcc mingw-w64-i686-binutils mingw-w64-i686-crt
-
-
       - name: Build
         shell: msys2 {0}
         run: |
@@ -42,25 +35,11 @@ jobs:
           make clean || true
           make
 
-      - name: Find EXE
-        id: find_exe
-        shell: pwsh
-        run: |
-          $exe = Get-ChildItem -Path . -Recurse -Filter *.exe |
-            Where-Object { $_.FullName -notmatch '\\(\.git|\.github|vendor|vcpkg)\\' } |
-            Select-Object -First 1
 
-          if (-not $exe) {
-            Write-Error "No .exe found after build"
-          }
 
-          "exe_path=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          "exe_name=$($exe.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          Write-Host "Found EXE: $($exe.FullName)"
-
-      - name: Upload EXE artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-exe-${{ github.sha }}
-          path: ${{ steps.find_exe.outputs.exe_path }}
-          if-no-files-found: error
+      # - name: Upload EXE artifact
+        # uses: actions/upload-artifact@v4
+        # with:
+          # name: windows-exe-${{ github.sha }}
+          # path: ${{ steps.find_exe.outputs.exe_path }}
+          # if-no-files-found: error

@@ -5,7 +5,7 @@ MAKE = make
 TYPE = linux
 
 ifeq ($(OS)$(PWD),Windows_NT)
-	MAKE = mingw32-make
+	MAKE = mingw64-make
 	TYPE = gcc
 endif
 
