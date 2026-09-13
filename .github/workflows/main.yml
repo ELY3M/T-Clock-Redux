@@ -16,20 +16,26 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v7
 
-    # - name: Install MinGW-w64
-      # run: |
-        # sudo apt-get update
-        # sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
+    - name: Install MinGW-w64
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
 
-    - name: Set up MinGW
-      uses: egor-tensin/setup-mingw@v3
-      with:
-        platform: x64
+    - name: Install MinGW-w64 32-bit compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
+
+
+    # - name: Set up MinGW x64
+      # uses: egor-tensin/setup-mingw@v3
+      # with:
+        # platform: x64
     
-    - name: Set up MinGW
-      uses: egor-tensin/setup-mingw@v3
-      with:
-        platform: x86    
+    # - name: Set up MinGW x86
+      # uses: egor-tensin/setup-mingw@v3
+      # with:
+        # platform: x86    
 
     - name: Build
       run: |
@@ -39,7 +45,7 @@ jobs:
 
     - name: Zipping up Release folders
       run: | 
-        zip -r ${{ github.workspace }}\t-clock-release.zip ${{ github.workspace }}\Release
+        zip -r ${{ github.workspace }}/t-clock-release.zip ${{ github.workspace }}/Release
 
 
     - name: Upload Release
@@ -49,13 +55,7 @@ jobs:
         prerelease: false    
         tag_name: ${{ github.run_number }}
         body: ${{ github.event.head_commit.message }}
-        files: ${{ github.workspace }}\t-clock-release.zip
+        files: ${{ github.workspace }}/t-clock-release.zip
       env:
         GITHUB_TOKEN: ${{ github.token }} 
 
-      # - name: Upload EXE artifact
-        # uses: actions/upload-artifact@v4
-        # with:
-          # name: windows-exe-${{ github.sha }}
-          # path: ${{ steps.find_exe.outputs.exe_path }}
-          # if-no-files-found: error
