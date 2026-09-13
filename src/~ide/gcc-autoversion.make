@@ -17,7 +17,7 @@ CXXFLAGS = $(CFLAGS)
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = -static -Wl,--gc-sections
+LDFLAGS = -static -static-libstdc++ -static-libgcc -Wl,--gc-sections
 
 INC_RELEASE = $(INC)
 CFLAGS_RELEASE = $(CFLAGS) -Os -DNDEBUG
