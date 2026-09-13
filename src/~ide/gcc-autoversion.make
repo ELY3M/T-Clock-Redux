@@ -12,7 +12,7 @@ LD = g++.exe
 WINDRES = windres.exe
 
 INC = 
-CFLAGS = -fno-ident -Wall -fvisibility=hidden -ffunction-sections -fmerge-all-constants -fno-asynchronous-unwind-tables -fno-exceptions -fwhole-program
+CFLAGS = -fno-ident -Wall -fvisibility=hidden -ffunction-sections -fmerge-all-constants -fno-asynchronous-unwind-tables -fno-exceptions
 CXXFLAGS = $(CFLAGS)
 RESINC = 
 LIBDIR = 
