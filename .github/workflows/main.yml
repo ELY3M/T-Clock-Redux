@@ -16,10 +16,20 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v7
 
-    - name: Install MinGW-w64
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
+    # - name: Install MinGW-w64
+      # run: |
+        # sudo apt-get update
+        # sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
+
+    - name: Set up MinGW
+      uses: egor-tensin/setup-mingw@v3
+      with:
+        platform: x64
+    
+    - name: Set up MinGW
+      uses: egor-tensin/setup-mingw@v3
+      with:
+        platform: x86    
 
     - name: Build
       run: |
