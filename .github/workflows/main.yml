@@ -14,6 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+
       - name: Set up MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -25,6 +26,13 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-binutils
             mingw-w64-x86_64-make
+
+       - name: Install MinGW 32-bit toolchain
+         shell: msys2 {0}
+         run: |
+           pacman -Syu --noconfirm || true
+           pacman -S --noconfirm --needed mingw-w64-i686-gcc mingw-w64-i686-binutils mingw-w64-i686-crt
+
 
       - name: Build
         shell: msys2 {0}
