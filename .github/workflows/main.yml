@@ -2,10 +2,11 @@ name: Build Windows EXE
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "master", "main", "elys" ]
   pull_request:
-    branches: [ "master", "main" ]
+    branches: [ "master", "main", "elys" ]
   workflow_dispatch:
+  workflow_call:
 
 permissions: write-all
 
