@@ -15,49 +15,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-    - name: Install MinGW-w64
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
-
-    - name: Install MinGW-w64 32-bit compiler
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
-
-
-    # - name: Set up MinGW x64
-      # uses: egor-tensin/setup-mingw@v3
-      # with:
-        # platform: x64
+      - name: Install MinGW-w64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
     
-    # - name: Set up MinGW x86
-      # uses: egor-tensin/setup-mingw@v3
-      # with:
-        # platform: x86    
+      - name: Install MinGW-w64 32-bit compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
+    
+    
+      # - name: Set up MinGW x64
+        # uses: egor-tensin/setup-mingw@v3
+        # with:
+          # platform: x64
+      
+      # - name: Set up MinGW x86
+        # uses: egor-tensin/setup-mingw@v3
+        # with:
+          # platform: x86    
+    
+      - name: Build
+        run: |
+          cd src/~ide
+          make clean
+          make
+    
+      - name: Zipping up Release folders
+        run: | 
+          zip -r ${{ github.workspace }}/t-clock-release.zip ${{ github.workspace }}/Release
+    
+      - name: get date/date 
+        env:
+         TZ: "America/Chicago"
+        run: | 
+          echo "NOW=$(date +'%m-%d-%Y-%I.%M.%S.%p')" >> $GITHUB_ENV
+            
+          
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false    
+          tag_name: ${{ env.NOW }}
+          body: ${{ github.event.head_commit.message }}
+          files: ${{ github.workspace }}/t-clock-release.zip
+          name: "Release ${{ env.NOW }}"
 
-    - name: Build
-      run: |
-        cd src/~ide
-        make clean
-        make
-
-    - name: Zipping up Release folders
-      run: | 
-        zip -r ${{ github.workspace }}/t-clock-release.zip ${{ github.workspace }}/Release
 
 
-    - name: Upload Release
-      uses: softprops/action-gh-release@v2
-      with:
-        draft: false
-        prerelease: false    
-        tag_name: ${{ github.run_number }}
-        body: ${{ github.event.head_commit.message }}
-        files: ${{ github.workspace }}/t-clock-release.zip
-      env:
-        GITHUB_TOKEN: ${{ github.token }} 
-
+   
+   
